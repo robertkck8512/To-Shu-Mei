@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Try Again?</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display&family=Dancing+Script&display=swap" rel="stylesheet">
+
+<style>
+body {
+    margin: 0;
+    font-family: 'Playfair Display', serif;
+    background: url("background.jpg") no-repeat center center/cover;
+    height: 100vh;
+    overflow: hidden;
+    color: white;
+}
+
+/* overlay */
+body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.35);
+}
+
+/* start screen */
+#startScreen {
+    position: fixed;
+    inset: 0;
+    background: black;
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 24px;
+    z-index: 10;
+}
+
+/* container */
+.container {
+    position: relative;
+    z-index: 1;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    transform: translateX(-20px);
+}
+
+/* text */
+h1 {
+    font-family: 'Dancing Script', cursive;
+    font-size: 34px;
+    margin-bottom: 20px;
+    min-height: 90px;
+    text-align: center;
+    line-height: 1.4;
+    text-shadow: 0 0 10px rgba(255,255,255,0.6);
+}
+
+/* buttons */
+.buttons {
+    position: relative;
+    display: flex;
+    gap: 20px;
+}
+
+button {
+    padding: 12px 24px;
+    font-size: 18px;
+    border: none;
+    border-radius: 25px;
+    cursor: pointer;
+}
+
+#yesBtn {
+    background-color: rgba(255, 107, 129, 0.9);
+    color: white;
+    box-shadow: 0 0 10px rgba(255, 107, 129, 0.7);
+}
+
+#noBtn {
+    background-color: rgba(200,200,200,0.9);
+    position: absolute;
+}
+
+/* result image */
+#resultImage {
+    margin-top: 20px;
+    width: 80%;
+    max-width: 300px;
+    border-radius: 12px;
+    opacity: 0;
+    transition: opacity 1s;
+}
+</style>
+</head>
+
+<body>
+
+<!-- START SCREEN -->
+<div id="startScreen">
+    Tap to start ❤️
+</div>
+
+<!-- MUSIC -->
+<audio id="bgm" loop>
+    <source src="music.mp3" type="audio/mpeg">
+</audio>
+
+<!-- MAIN CONTENT -->
+<div class="container" id="mainContent" style="display:none;">
+    <h1 id="question"></h1>
+
+    <div class="buttons">
+        <button id="yesBtn" onclick="yesClicked()">Yes</button>
+        <button id="noBtn">No</button>
+    </div>
+
+    <img id="resultImage" src="result.jpg">
+</div>
+
+<script>
+// start screen click → play music + show content
+document.getElementById("startScreen").addEventListener("click", () => {
+    document.getElementById("bgm").play();
+    document.getElementById("startScreen").style.display = "none";
+    document.getElementById("mainContent").style.display = "flex";
+});
+
+/* typing 3 lines */
+const lines = [
+    "I am sorry for everything",
+    "I miss you",
+    "Shall we try again?"
+];
+
+let lineIndex = 0;
+let charIndex = 0;
+
+function typeWriter() {
+    if (lineIndex < lines.length) {
+        let currentLine = lines[lineIndex];
+        if (charIndex < currentLine.length) {
+            document.getElementById("question").innerHTML += currentLine.charAt(charIndex);
+            charIndex++;
+            setTimeout(typeWriter, 60);
+        } else {
+            document.getElementById("question").innerHTML += "<br>";
+            lineIndex++;
+            charIndex = 0;
+            setTimeout(typeWriter, 400);
+        }
+    }
+}
+
+/* NO button run away */
+const noBtn = document.getElementById("noBtn");
+
+function initNoBtn() {
+    const yesBtn = document.getElementById("yesBtn");
+    noBtn.style.left = yesBtn.offsetWidth + 20 + "px";
+    noBtn.style.top = "0px";
+}
+
+noBtn.addEventListener("touchstart", moveNo);
+noBtn.addEventListener("mouseover", moveNo);
+
+function moveNo() {
+    const x = Math.random() * (window.innerWidth - 100);
+    const y = Math.random() * (window.innerHeight - 50);
+
+    noBtn.style.position = "fixed";
+    noBtn.style.left = x + "px";
+    noBtn.style.top = y + "px";
+}
+
+/* YES clicked */
+function yesClicked() {
+    document.getElementById("resultImage").style.opacity = 1;
+}
+
+/* start everything after entering */
+document.getElementById("startScreen").addEventListener("click", () => {
+    setTimeout(() => {
+        typeWriter();
+        initNoBtn();
+    }, 300);
+});
+</script>
+
+</body>
+</html>
